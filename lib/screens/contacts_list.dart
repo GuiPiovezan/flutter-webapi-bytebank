@@ -1,3 +1,4 @@
+import 'package:bytebank/components/progress/progress.dart';
 import 'package:bytebank/screens/contact_form.dart';
 import 'package:flutter/material.dart';
 
@@ -30,16 +31,7 @@ class _ContactsListState extends State<ContactsList> {
                 break;
               // A execução do Future está carregando
               case ConnectionState.waiting:
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: const <Widget>[
-                      CircularProgressIndicator(),
-                      Text('Loading'),
-                    ],
-                  ),
-                );
+                return Progress();
               // Tem dados disponivel porém não foi finalizado o Future (pedaços de um carregando assíncrono)
               case ConnectionState.active:
                 break;
