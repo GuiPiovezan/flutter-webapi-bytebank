@@ -33,7 +33,9 @@ Future<List<Transaction>> findAll() async {
   final Client client = InterceptedClient.build(
     interceptors: [LoggingInterceptor()],
   );
-  final Response response = await client.get(uri);
+  final Response response = await client.get(uri).timeout(
+        const Duration(seconds: 5),
+      );
 
   final List<dynamic> decodedJson = jsonDecode(response.body);
 
