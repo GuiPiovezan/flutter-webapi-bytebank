@@ -1,40 +1,20 @@
 import 'dart:convert';
 
+import 'package:bytebank/http/interceptors/logging_interceptior.dart';
 import 'package:bytebank/models/contact.dart';
 import 'package:bytebank/models/transaction.dart';
 import 'package:http/http.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 
-class LoggingInterceptor implements InterceptorContract {
-  @override
-  Future<RequestData> interceptRequest({required RequestData data}) async {
-    print('Resquest');
-    print('url: ${data.url}');
-    print('headers: ${data.headers}');
-    print('body: ${data.body}');
+final Client client = InterceptedClient.build(
+  interceptors: [LoggingInterceptor()],
+);
 
-    return data;
-  }
-
-  @override
-  Future<ResponseData> interceptResponse({required ResponseData data}) async {
-    print('Response');
-    print('status code: ${data.statusCode}');
-    print('headers: ${data.headers}');
-    print('body: ${data.body}');
-
-    return data;
-  }
-}
-
-var uri = Uri.parse('http://192.168.0.107:8080/transactions');
+final uri = Uri.parse('http://192.168.0.100:8080/transactions');
 
 Future<List<Transaction>> findAll() async {
-  final Client client = InterceptedClient.build(
-    interceptors: [LoggingInterceptor()],
-  );
   final Response response = await client.get(uri).timeout(
-        const Duration(seconds: 5),
+        const Duration(seconds: 15),
       );
 
   final List<dynamic> decodedJson = jsonDecode(response.body);
@@ -57,4 +37,36 @@ Future<List<Transaction>> findAll() async {
   }
 
   return transactions;
+}
+
+Future<Transaction> save(Transaction transaction) async {
+  Map<String, dynamic> transactionMap = {
+    'value': transaction.value,
+    'contact': {
+      'name': transaction.contact.name,
+      'accountNumber': transaction.contact.accountNumber
+    }
+  };
+
+  final String transactionJson = jsonEncode(transactionMap);
+
+  final Response response = await client.post(
+    uri,
+    headers: {
+      'Content-type': 'application/json',
+      'password': '1000',
+    },
+    body: transactionJson,
+  );
+
+  Map<String, dynamic> json = jsonDecode(response.body);
+
+  return Transaction(
+    json['value'],
+    Contact(
+      0,
+      json['contact']['name'],
+      json['contact']['accountNumber'],
+    ),
+  );
 }

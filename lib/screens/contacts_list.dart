@@ -1,5 +1,6 @@
 import 'package:bytebank/components/progress/progress.dart';
 import 'package:bytebank/screens/contact_form.dart';
+import 'package:bytebank/screens/transaction_form.dart';
 import 'package:flutter/material.dart';
 
 import '../database/dao/contact_dao.dart';
@@ -36,14 +37,29 @@ class _ContactsListState extends State<ContactsList> {
               case ConnectionState.active:
                 break;
               case ConnectionState.done:
-                List<Contact>? contacts = snapshot.data;
-                return ListView.builder(
-                  itemCount: contacts!.length,
-                  itemBuilder: (context, index) {
-                    final Contact contact = contacts[index];
-                    return _ContactItem(contact);
-                  },
-                );
+                if (snapshot.hasError) {
+                  return const Text('Tem um errão aqui em');
+                }
+                if (snapshot.hasData) {
+                  List<Contact>? contacts = snapshot.data;
+                  return ListView.builder(
+                    itemCount: contacts!.length,
+                    itemBuilder: (context, index) {
+                      final Contact contact = contacts[index];
+                      return _ContactItem(
+                        contact,
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: ((context) => TransactionForm(contact)),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  );
+                }
+                break;
             }
 
             return const Text('Unknow error');
@@ -63,11 +79,15 @@ class _ContactsListState extends State<ContactsList> {
 
 class _ContactItem extends StatelessWidget {
   final Contact contact;
-  const _ContactItem(this.contact);
+  final Function onTap;
+  const _ContactItem(this.contact, {required this.onTap})
+      // ignore: unnecessary_null_comparison
+      : assert(onTap != null);
   @override
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
+        onTap: () => onTap(),
         title: Text(
           contact.name,
           style: const TextStyle(fontSize: 24.0),

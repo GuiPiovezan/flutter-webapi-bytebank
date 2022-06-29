@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import '../models/transaction.dart';
 
 class TransactionsList extends StatelessWidget {
+  const TransactionsList({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,7 +30,7 @@ class TransactionsList extends StatelessWidget {
                 final List<Transaction>? transactions = snapshot.data;
                 if (transactions!.isNotEmpty) {
                   return ListView.builder(
-                    itemCount: transactions!.length,
+                    itemCount: transactions.length,
                     itemBuilder: (context, index) {
                       return Card(
                         child: ListTile(
