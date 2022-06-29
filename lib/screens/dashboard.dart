@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_null_comparison
+
 import 'package:bytebank/screens/contacts_list.dart';
 import 'package:bytebank/screens/transactions_list.dart';
 import 'package:flutter/material.dart';

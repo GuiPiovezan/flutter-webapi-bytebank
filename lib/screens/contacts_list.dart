@@ -32,7 +32,7 @@ class _ContactsListState extends State<ContactsList> {
                 break;
               // A execução do Future está carregando
               case ConnectionState.waiting:
-                return Progress();
+                return const Progress();
               // Tem dados disponivel porém não foi finalizado o Future (pedaços de um carregando assíncrono)
               case ConnectionState.active:
                 break;
