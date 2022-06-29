@@ -13,9 +13,10 @@ class TransactionWebClient {
           const Duration(seconds: 15),
         );
 
-    List<Transaction> transactions = _toTransactions(response);
-
-    return transactions;
+    final List<dynamic> decodedJson = jsonDecode(response.body);
+    return decodedJson
+        .map((dynamic item) => Transaction.fromJson(item))
+        .toList();
   }
 
   Future<Transaction> save(Transaction transaction) async {
@@ -30,23 +31,6 @@ class TransactionWebClient {
       body: transactionJson,
     );
 
-    return _toTransaction(response);
-  }
-
-  Transaction _toTransaction(Response response) {
-    Map<String, dynamic> json = jsonDecode(response.body);
-
-    return Transaction.fromJson(json);
-  }
-
-  List<Transaction> _toTransactions(Response response) {
-    final List<dynamic> decodedJson = jsonDecode(response.body);
-
-    List<Transaction> transactions = [];
-
-    for (Map<String, dynamic> item in decodedJson) {
-      transactions.add(Transaction.fromJson(item));
-    }
-    return transactions;
+    return Transaction.fromJson(jsonDecode(response.body));
   }
 }
